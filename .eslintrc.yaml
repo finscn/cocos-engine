@@ -50,7 +50,6 @@ rules:
     camelcase: off # underscores may come in handy in some cases
     eqeqeq: warn # important check missing from recommended
     keyword-spacing: warn # we require this explicitly
-    no-multi-spaces: off # useful for manually align some expression across lines
     prefer-rest-params: off # we need ES5 to be fast too
     prefer-spread: off # we need ES5 to be fast too
     space-before-function-paren: [warn, always] # we require this explicitly
@@ -153,11 +152,33 @@ rules:
       allowIIFEs: true, # IIFEs are widely used, writing their signature twice is painful
     }]
 
-    max-len: [warn, 200] # more lenient on max length per line
+    max-len: [warn, 250] # more lenient on max length per line
     no-console: warn # prefer the uniform logging methods
     '@typescript-eslint/no-unused-expressions': off
     '@typescript-eslint/no-empty-function': off
+    no-multi-spaces: [warn, {'ignoreEOLComments': true, 'exceptions': {'Property': true, 'VariableDeclarator': false } }]
 
+    comma-dangle: ['error', {
+        "arrays": "only-multiline",
+        "objects": "only-multiline",
+        "imports": "never",
+        "exports": "never",
+        "functions": "never"
+    }]
     function-paren-newline: off
+    space-infix-ops: warn
+    key-spacing: [warn, {
+        'singleLine':{
+            'beforeColon': false,
+            'afterColon': true
+        },
+        'multiLine' :{
+            'beforeColon': true,
+            'afterColon': true,
+            'align': 'colon'
+        }
+    }]
+    no-multiple-empty-lines: [warn, {'max': 2, 'maxEOF': 1}]
     '@typescript-eslint/no-unsafe-argument': off
     '@typescript-eslint/no-unsafe-enum-comparison': off
+    '@typescript-eslint/no-duplicate-type-constituents': [error, { ignoreIntersections: false, ignoreUnions: true }]
