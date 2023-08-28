@@ -34,11 +34,11 @@
  */
 
 import { ccclass, executeInEditMode, help, menu, requireComponent, type } from 'cc.decorator';
-import { Component } from '../scene-graph/component';
-import { TiledLayer } from './tiled-layer';
-import { CCInteger, warn } from '../core';
 import { UITransform } from '../2d/framework';
+import { CCInteger, warn } from '../core';
+import { Component } from '../scene-graph/component';
 import { NodeEventType } from '../scene-graph/node-event';
+import { TiledLayer } from './tiled-layer';
 
 @ccclass('cc.TiledTile')
 @help('i18n:cc.TiledTile')

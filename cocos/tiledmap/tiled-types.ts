@@ -22,13 +22,13 @@
  THE SOFTWARE.
 */
 
-import { Color, Rect, Size, Vec2 } from '../core';
 import { SpriteFrame } from '../2d/assets';
-import { ccenum } from '../core/value-types/enum';
 import { HorizontalTextAlignment, VerticalTextAlignment } from '../2d/components/label';
 import { Texture2D } from '../asset/assets';
+import { Color, Rect, Size, Vec2 } from '../core';
+import { ccenum } from '../core/value-types/enum';
 
-export type PropertiesInfo = { [key: string]: number | string };
+export interface PropertiesInfo { [key: string]: number | string }
 export type TiledAnimationType = Map<GID, TiledAnimation>;
 
 export interface TiledAnimation {

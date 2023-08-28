@@ -23,18 +23,18 @@
 */
 
 import { JSB } from 'internal:constants';
-import { Mat4, Size, Vec3 } from '../../core/math';
+import { TiledLayer, TiledRenderData, TiledTile } from '..';
 import { IAssembler } from '../../2d/renderer/base';
 import { IBatcher } from '../../2d/renderer/i-batcher';
-import { TiledLayer, TiledRenderData, TiledTile } from '..';
-import { GID, MixedGID, RenderOrder, TiledGrid, TileFlag } from '../tiled-types';
-import { director, Director } from '../../game';
-import { StaticVBAccessor } from '../../2d/renderer/static-vb-accessor';
-import { vfmtPosUvColor } from '../../2d/renderer/vertex-format';
 import { RenderData } from '../../2d/renderer/render-data';
 import { RenderDrawInfoType } from '../../2d/renderer/render-draw-info';
+import { StaticVBAccessor } from '../../2d/renderer/static-vb-accessor';
+import { vfmtPosUvColor } from '../../2d/renderer/vertex-format';
 import { Texture2D } from '../../asset/assets';
+import { Mat4, Size, Vec3 } from '../../core/math';
+import { Director, director } from '../../game';
 import { Node } from '../../scene-graph';
+import { GID, MixedGID, RenderOrder, TileFlag, TiledGrid } from '../tiled-types';
 
 const MaxGridsLimit = Math.ceil(65535 / 6);
 
@@ -56,8 +56,8 @@ let _moveX = 0;
 let _moveY = 0;
 
 let _fillCount = 0;
-let _curTexture : Texture2D | null = null;
-let _tempBuffers : Float32Array;
+let _curTexture: Texture2D | null = null;
+let _tempBuffers: Float32Array;
 let _curLayer: TiledLayer;
 
 let flipTexture: (grid: TiledGrid, gid: MixedGID) => void;

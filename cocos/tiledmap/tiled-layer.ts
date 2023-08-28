@@ -27,25 +27,34 @@
 import { ccclass } from 'cc.decorator';
 
 import { EDITOR_NOT_IN_PREVIEW } from 'internal:constants';
-import { UIRenderer } from '../2d/framework/ui-renderer';
 import { SpriteFrame } from '../2d/assets/sprite-frame';
-import { Component, Node } from '../scene-graph';
-import { TMXMapInfo } from './tmx-xml-parser';
-import { Color, IVec2Like, Mat4, Size, Vec2, Vec3, warn, logID } from '../core';
-import { TiledTile } from './tiled-tile';
-import { RenderData } from '../2d/renderer/render-data';
+import { UIRenderer } from '../2d/framework/ui-renderer';
 import { IBatcher } from '../2d/renderer/i-batcher';
-import {
-    MixedGID, GID, Orientation, TiledTextureGrids, TMXTilesetInfo, RenderOrder, StaggerAxis, StaggerIndex, TileFlag,
-    GIDFlags, TiledAnimationType, PropertiesInfo, TMXLayerInfo,
-} from './tiled-types';
-import { fillTextureGrids } from './tiled-utils';
-import { NodeEventType } from '../scene-graph/node-event';
-import { RenderEntity, RenderEntityType } from '../2d/renderer/render-entity';
+import { RenderData } from '../2d/renderer/render-data';
 import { RenderDrawInfo, RenderDrawInfoType } from '../2d/renderer/render-draw-info';
+import { RenderEntity, RenderEntityType } from '../2d/renderer/render-entity';
 import { Texture2D } from '../asset/assets';
+import { Color, IVec2Like, Mat4, Size, Vec2, Vec3, logID, warn } from '../core';
 import { director } from '../game';
 import { Camera } from '../render-scene/scene';
+import { Component, Node } from '../scene-graph';
+import { NodeEventType } from '../scene-graph/node-event';
+import { TiledTile } from './tiled-tile';
+import {
+    GID,
+    GIDFlags,
+    MixedGID,
+    Orientation,
+    PropertiesInfo,
+    RenderOrder, StaggerAxis, StaggerIndex,
+    TMXLayerInfo,
+    TMXTilesetInfo,
+    TileFlag,
+    TiledAnimationType,
+    TiledTextureGrids
+} from './tiled-types';
+import { fillTextureGrids } from './tiled-utils';
+import { TMXMapInfo } from './tmx-xml-parser';
 
 const _mat4_temp = new Mat4();
 const _vec2_temp = new Vec2();
@@ -98,8 +107,8 @@ export class TiledLayer extends UIRenderer {
 
     protected _viewPort = { x: -1, y: -1, width: -1, height: -1 };
     protected _cullingRect = {
-        leftDown: { row: -1, col: -1 },
-        rightTop: { row: -1, col: -1 },
+        leftDown : { row: -1, col: -1 },
+        rightTop : { row: -1, col: -1 },
     };
     get cullingRect (): {
         leftDown: {
@@ -110,14 +119,14 @@ export class TiledLayer extends UIRenderer {
             row: number;
             col: number;
         };
-    } { return this._cullingRect; }
+        } { return this._cullingRect; }
 
     protected _cullingDirty = true;
     protected _rightTop = { row: -1, col: -1 };
     get rightTop (): {
         row: number;
         col: number;
-    } { return this._rightTop; }
+        } { return this._rightTop; }
 
     protected _layerInfo: TMXLayerInfo | null = null;
     protected _mapInfo: TMXMapInfo | null = null;
@@ -563,7 +572,7 @@ export class TiledLayer extends UIRenderer {
 
         return new Vec2(
             this._mapTileSize!.width * 0.5 * (this._layerSize!.height + x - y - 1) + offsetX,
-            this._mapTileSize!.height * 0.5 * (this._layerSize!.width - x + this._layerSize!.height - y - 2) - offsetY,
+            this._mapTileSize!.height * 0.5 * (this._layerSize!.width - x + this._layerSize!.height - y - 2) - offsetY
         );
     }
 
@@ -582,7 +591,7 @@ export class TiledLayer extends UIRenderer {
 
         return new Vec2(
             x * this._mapTileSize!.width + offsetX,
-            (this._layerSize!.height - y - 1) * this._mapTileSize!.height - offsetY,
+            (this._layerSize!.height - y - 1) * this._mapTileSize!.height - offsetY
         );
     }
 

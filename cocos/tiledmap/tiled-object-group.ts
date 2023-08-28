@@ -23,18 +23,18 @@
  THE SOFTWARE.
 */
 
-import { ccclass, help, type, requireComponent } from 'cc.decorator';
-import { Component } from '../scene-graph/component';
-import { Sprite } from '../2d/components/sprite';
+import { ccclass, help, requireComponent, type } from 'cc.decorator';
 import { Label } from '../2d/components/label';
+import { Sprite } from '../2d/components/sprite';
 import { BlendFactor } from '../gfx';
+import { Component } from '../scene-graph/component';
 
-import { TMXMapInfo } from './tmx-xml-parser';
-import { TiledTextureGrids, GID, TileFlag, Orientation, StaggerAxis, TMXObjectType, PropertiesInfo, TiledAnimationType, TMXObject, TMXObjectGroupInfo } from './tiled-types';
-import { UITransform } from '../2d/framework/ui-transform';
-import { CCBoolean, Vec2, Color, CCObject } from '../core';
 import { SpriteFrame } from '../2d/assets';
+import { UITransform } from '../2d/framework/ui-transform';
+import { CCBoolean, CCObject, Color, Vec2 } from '../core';
 import { Node } from '../scene-graph/node';
+import { GID, Orientation, PropertiesInfo, StaggerAxis, TMXObject, TMXObjectGroupInfo, TMXObjectType, TileFlag, TiledAnimationType, TiledTextureGrids } from './tiled-types';
+import { TMXMapInfo } from './tmx-xml-parser';
 
 /**
  * @en Renders the TMX object group.

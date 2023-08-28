@@ -22,16 +22,18 @@
  THE SOFTWARE.
 */
 
-import { Label, HorizontalTextAlignment, VerticalTextAlignment } from '../2d/components/label';
 import codec from '../../external/compression/ZipUtils.js';
 import zlib from '../../external/compression/zlib.min.js';
-import { SAXParser } from '../asset/asset-manager/plist-parser';
-import {
-    GID, MixedGID, Orientation, PropertiesInfo, RenderOrder, StaggerAxis, StaggerIndex, TiledAnimation, TiledAnimationType,
-    TileFlag, TMXImageLayerInfo, TMXLayerInfo, TMXObject, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
-} from './tiled-types';
-import { Color, error, errorID, logID, Size, Vec2, warn } from '../core';
 import { SpriteFrame } from '../2d/assets';
+import { HorizontalTextAlignment, Label, VerticalTextAlignment } from '../2d/components/label';
+import { SAXParser } from '../asset/asset-manager/plist-parser';
+import { Color, Size, Vec2, error, errorID, logID, warn } from '../core';
+import {
+    GID, MixedGID, Orientation, PropertiesInfo, RenderOrder, StaggerAxis, StaggerIndex,
+    TMXImageLayerInfo, TMXLayerInfo, TMXObject, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
+    TileFlag,
+    TiledAnimation, TiledAnimationType
+} from './tiled-types';
 
 function uint8ArrayToUint32Array (uint8Arr: Uint8Array): null | Uint32Array | number[] {
     if (uint8Arr.length % 4 !== 0) return null;
