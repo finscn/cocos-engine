@@ -244,12 +244,12 @@ export class Input {
 
     /**
      * @en
-     * Get all the current touches objects.
+     * Get all the current touches objects as array.
      * @zh
-     * 获取当前所有的 touch 对象。
+     * 获取当前 所有touch对象 的数组。
      */
     public getAllTouches (): Touch[] {
-        return touchManager.getAllTouches();
+        return touchManager.getAllTouches(false);
     }
 
     /**
