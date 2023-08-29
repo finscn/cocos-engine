@@ -23,7 +23,7 @@
 */
 
 import { Vec2 } from '../../cocos/core/math/vec2';
-import { log as ccLog } from '../../cocos/core/platform/debug';
+import { log } from '../../cocos/core/platform/debug';
 import { macro } from '../../cocos/core/platform/macro';
 import { Touch } from '../../cocos/input/types';
 
@@ -33,7 +33,7 @@ class TouchManager {
     /**
      * A map from touch ID to touch object.
      */
-    private _touchMap: Map<number, Touch>;
+    public _touchMap: Map<number, Touch>;
     private readonly _maxTouches = 8;
 
     constructor () {
@@ -69,12 +69,12 @@ class TouchManager {
      */
     private _createTouch (touchID: number, x: number, y: number): Touch | undefined {
         if (this._touchMap.has(touchID)) {
-            ccLog('Cannot create the same touch object.');
+            log('Cannot create the same touch object.');
             return undefined;
         }
         const checkResult = this._checkTouchMapSizeMoreThanMax(touchID);
         if (checkResult) {
-            ccLog('The touches is more than MAX_TOUCHES.');  // TODO: logID 2300
+            log('The touches is more than MAX_TOUCHES.');  // TODO: logID 2300
             return undefined;
         }
         const touch = new Touch(x, y, touchID);
@@ -126,14 +126,6 @@ class TouchManager {
     }
 
     /**
-     * Get the number of touches.
-     * @returns
-     */
-    public getTouchCount (): number {
-        return this._touchMap.size;
-    }
-
-    /**
      * Update the location and previous location of current touch ID.
      * @param touchID
      * @param x The current location X
@@ -157,7 +149,7 @@ class TouchManager {
         const now = performance.now();
         this._touchMap.forEach((touch) => {
             if (now - touch.lastModified > macro.TOUCH_TIMEOUT) {
-                ccLog(`The touches is more than MAX_TOUCHES, release touch id ${touch.getID()}.`);
+                log(`The touches is more than MAX_TOUCHES, release touch id ${touch.getID()}.`);
                 // TODO: need to handle touch cancel event when exceed the max number of touches ?
                 this.releaseTouch(touch.getID());
             }
