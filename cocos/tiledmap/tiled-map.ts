@@ -440,7 +440,9 @@ export class TiledMap extends Component {
     _fillAniGrids (texGrids: TiledTextureGrids, animations: TiledAnimationType): void {
         for (const i of animations.keys()) {
             const animation = animations.get(i);
-            if (!animation) continue;
+            if (!animation) {
+                continue;
+            }
             const frames = animation.frames;
             for (let j = 0; j < frames.length; j++) {
                 const frame = frames[j];
@@ -457,7 +459,9 @@ export class TiledMap extends Component {
 
         for (let i = 0, l = tilesets.length; i < l; ++i) {
             const tilesetInfo = tilesets[i];
-            if (!tilesetInfo) continue;
+            if (!tilesetInfo) {
+                continue;
+            }
             if (!tilesetInfo.sourceImage) {
                 warn(`Can't find the spriteFrame of tilesets ${i}`);
                 continue;
@@ -588,14 +592,18 @@ export class TiledMap extends Component {
         const totalTextures: SpriteFrame[] = [];
         for (let i = 0, l = tilesets.length; i < l; ++i) {
             const tilesetInfo = tilesets[i];
-            if (!tilesetInfo || !tilesetInfo.sourceImage) continue;
+            if (!tilesetInfo || !tilesetInfo.sourceImage) {
+                continue;
+            }
             this._textures[i] = tilesetInfo.sourceImage;
             totalTextures.push(tilesetInfo.sourceImage);
         }
 
         for (let i = 0; i < this._imageLayers.length; i++) {
             const imageLayer = this._imageLayers[i];
-            if (!imageLayer || !imageLayer.sourceImage) continue;
+            if (!imageLayer || !imageLayer.sourceImage) {
+                continue;
+            }
             totalTextures.push(imageLayer.sourceImage);
         }
 

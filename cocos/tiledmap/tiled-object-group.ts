@@ -140,7 +140,9 @@ export class TiledObjectGroup extends Component {
     protected _mapInfo?: TMXMapInfo;
     protected _properties?: PropertiesInfo;
     protected _offset?: Vec2;
-    get offset (): Vec2 { return this._offset!; }
+    get offset (): Vec2 {
+        return this._offset!;
+    }
     protected _opacity?: number;
     protected _tintColor: Color | null = null;
 
@@ -279,7 +281,9 @@ export class TiledObjectGroup extends Component {
                 const gid = object.gid;
                 const gridGID: GID = (((gid as unknown as number) & FLIPPED_MASK) >>> 0) as any;
                 const grid = texGrids.get(gridGID);
-                if (!grid) continue;
+                if (!grid) {
+                    continue;
+                }
                 const tileset = grid.tileset;
                 const imgName = `img${object.id}`;
                 aliveNodes[imgName] = true;
@@ -383,7 +387,9 @@ export class TiledObjectGroup extends Component {
             const c = children[i];
             const cName = c.name;
             const isUseless = uselessExp.test(cName);
-            if (isUseless && !aliveNodes[cName]) c.destroy();
+            if (isUseless && !aliveNodes[cName]) {
+                c.destroy();
+            }
         }
     }
 

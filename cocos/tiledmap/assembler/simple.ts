@@ -72,7 +72,7 @@ export const simple: IAssembler = {
         if (!_accessor) {
             const device = director.root!.device;
             const batcher = director.root!.batcher2D;
-            _accessor = new StaticVBAccessor(device, vfmtPosUvColor, this.vCount);
+            _accessor = new StaticVBAccessor(device, vfmtPosUvColor, this.vCount as number);
             //batcher.registerBufferAccessor(Number.parseInt('TILED-MAP', 36), _accessor);
             director.on(Director.EVENT_BEFORE_DRAW, () => {
                 _accessor.reset();
@@ -87,7 +87,9 @@ export const simple: IAssembler = {
     },
 
     fillBuffers (layer: TiledLayer, renderer: IBatcher) {
-        if (!layer || layer.tiledDataArray.length === 0) return;
+        if (!layer || layer.tiledDataArray.length === 0) {
+            return;
+        }
 
         const dataArray = layer.tiledDataArray;
 
@@ -168,7 +170,9 @@ export const simple: IAssembler = {
         colorV[3] = color.a / 255;
         const rs = tiled.tiledDataArray;
         for (const r of rs) {
-            if (!(r as any).renderData) continue;
+            if (!(r as any).renderData) {
+                continue;
+            }
             const renderData = (r as any).renderData;
             const vs = renderData.vData;
             for (let i = renderData.vertexStart, l = renderData.vertexCount; i < l; i++) {
@@ -302,7 +306,9 @@ function _flipDiamondTileTexture (inGrid: TiledGrid, gid: MixedGID): void {
 }
 
 function packRenderData (): void {
-    if (_fillCount < 1 || !_curTexture) return;
+    if (_fillCount < 1 || !_curTexture) {
+        return;
+    }
 
     const vbCount = 4 * _fillCount;
     const ibCount = 6 * _fillCount;
@@ -328,7 +334,9 @@ function packRenderData (): void {
 function traverseGrids (leftDown: { col: number, row: number }, rightTop: { col: number, row: number },
     rowMoveDir: number, colMoveDir: number, comp: TiledLayer): void {
     // show nothing
-    if (rightTop.row < 0 || rightTop.col < 0) return;
+    if (rightTop.row < 0 || rightTop.col < 0) {
+        return;
+    }
 
     _curLayer = comp;
 
@@ -420,7 +428,9 @@ function traverseGrids (leftDown: { col: number, row: number }, rightTop: { col:
 
             gid = tiles[colData.index];
             grid = texGrids.get((((gid as unknown as number) & TileFlag.FLIPPED_MASK) >>> 0) as unknown as GID);
-            if (!grid) continue;
+            if (!grid) {
+                continue;
+            }
 
             // check init or new material
             if (_curTexture !== grid.texture) {
