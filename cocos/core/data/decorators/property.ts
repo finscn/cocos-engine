@@ -161,12 +161,15 @@ export function getOrCreatePropertyStash (
     const properties = getSubDict(ccclassProto, 'properties');
     const propertyStash = properties[propertyKey as string] ??= {} as PropertyStash;
     propertyStash.__internalFlags |= PropertyStashInternalFlag.STANDALONE;
-    if (descriptorOrInitializer && typeof descriptorOrInitializer !== 'function' && (descriptorOrInitializer.get || descriptorOrInitializer.set)) {
-        if (descriptorOrInitializer.get) {
-            propertyStash.get = descriptorOrInitializer.get;
+
+    const descriptor = (descriptorOrInitializer as BabelPropertyDecoratorDescriptor);
+
+    if (descriptor && typeof descriptor !== 'function' && (descriptor.get || descriptor.set)) {
+        if (propertyStash && descriptor.get) {
+            propertyStash.get = descriptor.get;
         }
-        if (descriptorOrInitializer.set) {
-            propertyStash.set = descriptorOrInitializer.set;
+        if (propertyStash && descriptor.set) {
+            propertyStash.set = descriptor.set;
         }
     } else {
         setDefaultValue(
@@ -206,11 +209,17 @@ function mergePropertyOptions (
                 warnID(3655, propertyKey as string, getClassName(ctor), propertyKey as string, propertyKey as string);
             }
         }
-        if (descriptorOrInitializer.get) {
-            propertyRecord.get = descriptorOrInitializer.get;
-        }
-        if (descriptorOrInitializer.set) {
-            propertyRecord.set = descriptorOrInitializer.set;
+
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        const descriptor = (descriptorOrInitializer as BabelPropertyDecoratorDescriptor);
+
+        if (propertyRecord && descriptor) {
+            if (descriptor.get) {
+                propertyRecord.get = descriptor.get;
+            }
+            if (descriptor.set) {
+                propertyRecord.set = descriptor.set;
+            }
         }
     } else { // Target property is non-accessor
         if (DEV && (propertyRecord.get || propertyRecord.set)) {
