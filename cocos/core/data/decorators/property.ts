@@ -23,7 +23,7 @@
 */
 
 import { DEV, EDITOR, TEST } from 'internal:constants';
-import { errorID, warnID } from '../../platform/debug';
+import { StringSubstitution, errorID, warnID } from '../../platform/debug';
 import { getClassName, mixin } from '../../utils/js-typed';
 import { ClassStash, PropertyStash, PropertyStashInternalFlag } from '../class-stash';
 import { CCBoolean, CCFloat, CCInteger, CCString } from '../utils/attribute';
@@ -80,7 +80,7 @@ export function property (
             target,
             propertyKey
         );
-        const classConstructor = target.constructor;
+        const classConstructor = target.constructor as (new () => unknown);
         mergePropertyOptions(
             classStash,
             propertyStash,
@@ -133,7 +133,7 @@ function extractActualDefaultValues (classConstructor: new () => unknown): unkno
         dummyObj = new classConstructor();
     } catch (e: any) {
         if (DEV) {
-            warnID(3652, getClassName(classConstructor), e);
+            warnID(3652, getClassName(classConstructor), e as StringSubstitution);
         }
         return {};
     }
@@ -183,7 +183,8 @@ export function getOrCreatePropertyStash (
 function mergePropertyOptions (
     cache: ClassStash,
     propertyStash: PropertyStash,
-    ctor,
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    ctor: new () => unknown,
     propertyKey: Parameters<LegacyPropertyDecorator>[1],
     options,
     descriptorOrInitializer: Parameters<LegacyPropertyDecorator>[2] | undefined

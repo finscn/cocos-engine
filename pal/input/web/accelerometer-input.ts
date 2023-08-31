@@ -126,7 +126,7 @@ export class AccelerometerInputSource {
                     this._registerEvent();
                 }
             }).catch((e: any) => {
-                //
+                // do nothing
             });
         } else {
             this._registerEvent();
