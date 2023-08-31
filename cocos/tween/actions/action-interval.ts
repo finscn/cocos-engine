@@ -362,7 +362,8 @@ export class Sequence extends ActionInterval {
             return false;
         }
 
-        let durationOne = actionOne._duration; let durationTwo = actionTwo._duration;
+        let durationOne = actionOne._duration as number;
+        let durationTwo = actionTwo._duration as number;
         durationOne *= actionOne._repeatMethod ? actionOne._timesForRepeat : 1;
         durationTwo *= actionTwo._repeatMethod ? actionTwo._timesForRepeat : 1;
         const d = durationOne + durationTwo;
@@ -800,8 +801,8 @@ export class Spawn extends ActionInterval {
 
         let ret = false;
 
-        const d1 = action1._duration;
-        const d2 = action2._duration;
+        const d1 = action1._duration as number;
+        const d2 = action2._duration as number;
 
         if (this.initWithDuration(Math.max(d1, d2))) {
             this._one = action1;
@@ -837,7 +838,7 @@ export class Spawn extends ActionInterval {
         Action.prototype.stop.call(this);
     }
 
-    update (dt: any): void {
+    update (dt: number): void {
         dt = this._computeEaseTime(dt);
         if (this._one) {
             this._one.update(dt);
@@ -891,7 +892,9 @@ export function spawn (/* Multiple Arguments */tempArray: any): FiniteTimeAction
  * @extends ActionInterval
  */
 class DelayTime extends ActionInterval {
-    update (dt: any): void { }
+    update (dt: any): void {
+        // do nothing
+    }
 
     reverse (): any {
         const action = new DelayTime(this._duration);
