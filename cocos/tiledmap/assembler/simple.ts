@@ -72,7 +72,7 @@ export const simple: IAssembler = {
         if (!_accessor) {
             const device = director.root!.device;
             const batcher = director.root!.batcher2D;
-            _accessor = new StaticVBAccessor(device, vfmtPosUvColor, this.vCount);
+            _accessor = new StaticVBAccessor(device, vfmtPosUvColor, this.vCount as number);
             //batcher.registerBufferAccessor(Number.parseInt('TILED-MAP', 36), _accessor);
             director.on(Director.EVENT_BEFORE_DRAW, () => {
                 _accessor.reset();

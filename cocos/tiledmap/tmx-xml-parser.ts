@@ -27,7 +27,7 @@ import zlib from '../../external/compression/zlib.min.js';
 import { SpriteFrame } from '../2d/assets';
 import { HorizontalTextAlignment, Label, VerticalTextAlignment } from '../2d/components/label';
 import { SAXParser } from '../asset/asset-manager/plist-parser';
-import { Color, Size, Vec2, errorID, logID } from '../core';
+import { Color, Size, Vec2, error, errorID, logID, warn } from '../core';
 import {
     GID, MixedGID, Orientation, PropertiesInfo, RenderOrder, StaggerAxis, StaggerIndex,
     TMXImageLayerInfo, TMXLayerInfo, TMXObject, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
@@ -35,12 +35,12 @@ import {
     TiledAnimation, TiledAnimationType
 } from './tiled-types';
 
-function uint8ArrayToUint32Array (uint8Arr: Uint8Array): null | Uint32Array | number[] {
+function uint8ArrayToUint32Array (uint8Arr: Uint8Array): Uint32Array | null {
     if (uint8Arr.length % 4 !== 0) {
         return null;
     }
     const arrLen = uint8Arr.length / 4;
-    const retArr = window.Uint32Array ? new Uint32Array(arrLen) : [];
+    const retArr = new Uint32Array(arrLen);
     for (let i = 0; i < arrLen; i++) {
         const offset = i * 4;
         retArr[i] = uint8Arr[offset] + uint8Arr[offset + 1] * (1 << 8) + uint8Arr[offset + 2] * (1 << 16) + uint8Arr[offset + 3] * (1 << 24);
@@ -109,13 +109,13 @@ function getPropertyList (node: Element, map?: PropertiesInfo): PropertiesInfo {
 
         let value = element.getAttribute('value');
         if (type === 'int') {
-            value = parseInt(value);
+            value = parseInt(value as string);
         } else if (type === 'float') {
-            value = parseFloat(value);
+            value = parseFloat(value as string);
         } else if (type === 'bool') {
             value = value === 'true';
         } else if (type === 'color') {
-            value = strToColor(value);
+            value = strToColor(value as string);
         }
 
         map![name] = value;
@@ -690,9 +690,9 @@ export class TMXMapInfo {
                                     tileset.imageName = shortName;
                                     tileset.sourceImage = this._spriteFrameMap![shortName];
                                     if (!tileset.sourceImage) {
-                                        console.error(`[error]: ${shortName} not find in [${Object.keys(this._spriteFrameMap!).join(', ')}]`);
+                                        error(`[error]: ${shortName} not find in [${Object.keys(this._spriteFrameMap!).join(', ')}]`);
                                         errorID(7221, curImageName);
-                                        console.warn(`Please try asset type of ${curImageName} to 'sprite-frame'`);
+                                        warn(`Please try asset type of ${curImageName} to 'sprite-frame'`);
                                     }
                                 }
                             }
@@ -745,7 +745,7 @@ export class TMXMapInfo {
                                 tileset.sourceImage = this._spriteFrameMap![shortName];
                                 if (!tileset.sourceImage) {
                                     errorID(7221, imageName);
-                                    console.warn(`Please try asset type of ${imageName} to 'sprite-frame'`);
+                                    warn(`Please try asset type of ${imageName} to 'sprite-frame'`);
                                 }
                             }
                         }
@@ -835,7 +835,7 @@ export class TMXMapInfo {
 
         if (!imageLayer.sourceImage) {
             errorID(7221, source!);
-            console.warn(`Please try asset type of ${source} to 'sprite-frame'`);
+            warn(`Please try asset type of ${source} to 'sprite-frame'`);
             return null;
         }
         return imageLayer;
@@ -879,14 +879,14 @@ export class TMXMapInfo {
             logID(7218);
             return null;
         }
-        let tiles;
+        let tiles: Uint32Array | number[] | null;
         switch (compression) {
         case 'gzip':
             tiles = codec.unzipBase64AsArray(nodeValue, 4);
             break;
         case 'zlib': {
             const inflator = new zlib.Inflate(codec.Base64.decodeAsArray(nodeValue, 1));
-            tiles = uint8ArrayToUint32Array(inflator.decompress());
+            tiles = uint8ArrayToUint32Array(inflator.decompress() as Uint8Array);
             break;
         }
         case null:
@@ -910,13 +910,15 @@ export class TMXMapInfo {
             }
             break;
         default:
+            tiles = null;
             if (this.layerAttrs === TMXLayerInfo.ATTRIB_NONE) {
                 logID(7219);
             }
             break;
         }
+
         if (tiles) {
-            layer.tiles = new Uint32Array(tiles);
+            layer.tiles = Array.isArray(tiles) ? new Uint32Array(tiles) : tiles;
         }
 
         // The parent element is the last layer
@@ -981,7 +983,7 @@ export class TMXMapInfo {
 
                 objectProp.rotation = parseFloat(selObj.getAttribute('rotation')!) || 0;
 
-                getPropertyList(selObj, objectProp as any);
+                getPropertyList(selObj, objectProp as unknown as PropertiesInfo);
 
                 // visible
                 const visibleAttr = selObj.getAttribute('visible');

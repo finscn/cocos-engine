@@ -561,7 +561,7 @@ export class TiledLayer extends UIRenderer {
       * cc.log("Pos: " + pos);
       */
     public getPositionAt (pos: IVec2Like | number, y?: number): Vec2 | null {
-        let x;
+        let x: number;
         if (y !== undefined) {
             x = Math.floor(pos as number);
             y = Math.floor(y);

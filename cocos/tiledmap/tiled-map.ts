@@ -27,7 +27,7 @@ import { EDITOR, JSB } from 'internal:constants';
 import { SpriteFrame } from '../2d/assets';
 import { Sprite } from '../2d/components/sprite';
 import { UITransform } from '../2d/framework';
-import { Color, Size, Vec2, logID, sys } from '../core';
+import { Color, Size, Vec2, logID, sys, warn } from '../core';
 import { Node } from '../scene-graph';
 import { Component } from '../scene-graph/component';
 import { NodeEventType } from '../scene-graph/node-event';
@@ -463,7 +463,7 @@ export class TiledMap extends Component {
                 continue;
             }
             if (!tilesetInfo.sourceImage) {
-                console.warn(`Can't find the spriteFrame of tilesets ${i}`);
+                warn(`Can't find the spriteFrame of tilesets ${i}`);
                 continue;
             }
             fillTextureGrids(tilesetInfo, texGrids, tilesetInfo.sourceImage);
