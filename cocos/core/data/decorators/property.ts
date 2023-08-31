@@ -22,14 +22,14 @@
  THE SOFTWARE.
 */
 
-import { DEV, EDITOR, JSB, TEST } from 'internal:constants';
-import { CCString, CCInteger, CCFloat, CCBoolean } from '../utils/attribute';
-import { IExposedAttributes } from '../utils/attribute-defines';
-import { LegacyPropertyDecorator, getSubDict, BabelPropertyDecoratorDescriptor, Initializer, getOrCreateClassDecoratorStash } from './utils';
-import { warnID, errorID } from '../../platform/debug';
-import { getFullFormOfProperty } from '../utils/preprocess-class';
-import { ClassStash, PropertyStash, PropertyStashInternalFlag } from '../class-stash';
+import { DEV, EDITOR, TEST } from 'internal:constants';
+import { errorID, warnID } from '../../platform/debug';
 import { getClassName, mixin } from '../../utils/js-typed';
+import { ClassStash, PropertyStash, PropertyStashInternalFlag } from '../class-stash';
+import { CCBoolean, CCFloat, CCInteger, CCString } from '../utils/attribute';
+import { IExposedAttributes } from '../utils/attribute-defines';
+import { getFullFormOfProperty } from '../utils/preprocess-class';
+import { BabelPropertyDecoratorDescriptor, Initializer, LegacyPropertyDecorator, getOrCreateClassDecoratorStash, getSubDict } from './utils';
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 export type SimplePropertyType = Function | string | typeof CCString | typeof CCInteger | typeof CCFloat | typeof CCBoolean;
@@ -67,18 +67,18 @@ export function property (...args: Parameters<LegacyPropertyDecorator>): void;
 export function property (
     target?: Parameters<LegacyPropertyDecorator>[0] | PropertyType,
     propertyKey?: Parameters<LegacyPropertyDecorator>[1],
-    descriptorOrInitializer?: Parameters<LegacyPropertyDecorator>[2],
+    descriptorOrInitializer?: Parameters<LegacyPropertyDecorator>[2]
 ): LegacyPropertyDecorator | undefined {
     let options: IPropertyOptions | PropertyType | null = null;
     function normalized (
         target: Parameters<LegacyPropertyDecorator>[0],
         propertyKey: Parameters<LegacyPropertyDecorator>[1],
-        descriptorOrInitializer: Parameters<LegacyPropertyDecorator>[2],
+        descriptorOrInitializer: Parameters<LegacyPropertyDecorator>[2]
     ): void {
         const classStash = getOrCreateClassDecoratorStash(target as AnyFunction);
         const propertyStash = getOrCreateEmptyPropertyStash(
             target,
-            propertyKey,
+            propertyKey
         );
         const classConstructor = target.constructor;
         mergePropertyOptions(
@@ -87,7 +87,7 @@ export function property (
             classConstructor,
             propertyKey,
             options,
-            descriptorOrInitializer,
+            descriptorOrInitializer
         );
     }
 
@@ -131,7 +131,7 @@ function extractActualDefaultValues (classConstructor: new () => unknown): unkno
     try {
         // eslint-disable-next-line new-cap
         dummyObj = new classConstructor();
-    } catch (e) {
+    } catch (e: any) {
         if (DEV) {
             warnID(3652, getClassName(classConstructor), e);
         }
@@ -142,24 +142,24 @@ function extractActualDefaultValues (classConstructor: new () => unknown): unkno
 
 function getOrCreateEmptyPropertyStash (
     target: Parameters<LegacyPropertyDecorator>[0],
-    propertyKey: Parameters<LegacyPropertyDecorator>[1],
+    propertyKey: Parameters<LegacyPropertyDecorator>[1]
 ): PropertyStash {
     const classStash = getOrCreateClassDecoratorStash(target.constructor);
     const ccclassProto = getSubDict(classStash, 'proto');
     const properties = getSubDict(ccclassProto, 'properties');
-    const propertyStash = properties[(propertyKey as string)] ??= {} as PropertyStash;
+    const propertyStash = properties[propertyKey as string] ??= {} as PropertyStash;
     return propertyStash;
 }
 
 export function getOrCreatePropertyStash (
     target: Parameters<LegacyPropertyDecorator>[0],
     propertyKey: Parameters<LegacyPropertyDecorator>[1],
-    descriptorOrInitializer?: Parameters<LegacyPropertyDecorator>[2],
+    descriptorOrInitializer?: Parameters<LegacyPropertyDecorator>[2]
 ): PropertyStash {
     const classStash = getOrCreateClassDecoratorStash(target.constructor);
     const ccclassProto = getSubDict(classStash, 'proto');
     const properties = getSubDict(ccclassProto, 'properties');
-    const propertyStash = properties[(propertyKey as string)] ??= {} as PropertyStash;
+    const propertyStash = properties[propertyKey as string] ??= {} as PropertyStash;
     propertyStash.__internalFlags |= PropertyStashInternalFlag.STANDALONE;
     if (descriptorOrInitializer && typeof descriptorOrInitializer !== 'function' && (descriptorOrInitializer.get || descriptorOrInitializer.set)) {
         if (descriptorOrInitializer.get) {
@@ -174,7 +174,7 @@ export function getOrCreatePropertyStash (
             propertyStash,
             target.constructor as new () => unknown,
             propertyKey,
-            descriptorOrInitializer,
+            descriptorOrInitializer
         );
     }
     return propertyStash;
@@ -186,7 +186,7 @@ function mergePropertyOptions (
     ctor,
     propertyKey: Parameters<LegacyPropertyDecorator>[1],
     options,
-    descriptorOrInitializer: Parameters<LegacyPropertyDecorator>[2] | undefined,
+    descriptorOrInitializer: Parameters<LegacyPropertyDecorator>[2] | undefined
 ): void {
     let fullOptions;
     const isGetset = descriptorOrInitializer && typeof descriptorOrInitializer !== 'function'
@@ -200,21 +200,21 @@ function mergePropertyOptions (
         // typescript or babel
         if (DEV && options && ((fullOptions || options).get || (fullOptions || options).set)) {
             const errorProps = getSubDict(cache, 'errorProps');
-            if (!errorProps[(propertyKey as string)]) {
-                errorProps[(propertyKey as string)] = true;
+            if (!errorProps[propertyKey as string]) {
+                errorProps[propertyKey as string] = true;
                 warnID(3655, propertyKey as string, getClassName(ctor), propertyKey as string, propertyKey as string);
             }
         }
-        if ((descriptorOrInitializer as BabelPropertyDecoratorDescriptor).get) {
-            propertyRecord.get = (descriptorOrInitializer as BabelPropertyDecoratorDescriptor).get;
+        if (descriptorOrInitializer.get) {
+            propertyRecord.get = descriptorOrInitializer.get;
         }
-        if ((descriptorOrInitializer as BabelPropertyDecoratorDescriptor).set) {
-            propertyRecord.set = (descriptorOrInitializer as BabelPropertyDecoratorDescriptor).set;
+        if (descriptorOrInitializer.set) {
+            propertyRecord.set = descriptorOrInitializer.set;
         }
     } else { // Target property is non-accessor
         if (DEV && (propertyRecord.get || propertyRecord.set)) {
             // Specify "accessor options" for non-accessor property is forbidden.
-            errorID(3655, propertyKey as string, getClassName(ctor), propertyKey  as string, propertyKey  as string);
+            errorID(3655, propertyKey as string, getClassName(ctor), propertyKey as string, propertyKey as string);
             return;
         }
 
@@ -223,10 +223,10 @@ function mergePropertyOptions (
             propertyRecord,
             ctor,
             propertyKey,
-            descriptorOrInitializer,
+            descriptorOrInitializer
         );
 
-        if ((EDITOR && !window.Build) || TEST) {
+        if (EDITOR && !window.Build || TEST) {
             // eslint-disable-next-line no-prototype-builtins
             if (!fullOptions && options && options.hasOwnProperty('default')) {
                 warnID(3653, propertyKey as string, getClassName(ctor));
@@ -240,7 +240,7 @@ function setDefaultValue<T> (
     propertyStash: PropertyStash,
     classConstructor: new () => T,
     propertyKey: PropertyKey,
-    descriptorOrInitializer: BabelPropertyDecoratorDescriptor | Initializer | undefined | null,
+    descriptorOrInitializer: BabelPropertyDecoratorDescriptor | Initializer | undefined | null
 ): void {
     if (descriptorOrInitializer !== undefined) {
         if (typeof descriptorOrInitializer === 'function') {

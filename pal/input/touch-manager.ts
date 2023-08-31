@@ -107,7 +107,7 @@ class TouchManager {
         } else {
             this._updateTouch(touch, x, y);
         }
-        return touch ? (clone === false ? touch : this._cloneTouch(touch)) : undefined;
+        return touch ? clone === false ? touch : this._cloneTouch(touch) : undefined;
     }
 
     /**

@@ -253,7 +253,7 @@ export class Input {
      */
     public getTouch (touchID: number, clone?: boolean): Touch | undefined {
         const touch = touchManager._touchMap.get(touchID);
-        return touch ? (clone === false ? touch : touchManager._cloneTouch(touch)) : undefined;
+        return touch ? clone === false ? touch : touchManager._cloneTouch(touch) : undefined;
     }
 
     /**
@@ -317,7 +317,7 @@ export class Input {
             return;
         }
         const changedTouches = [touch];
-        const eventTouch = new EventTouch(changedTouches, false, eventType, (eventType === InputEventType.TOUCH_END ? [] : changedTouches));
+        const eventTouch = new EventTouch(changedTouches, false, eventType, eventType === InputEventType.TOUCH_END ? [] : changedTouches);
         eventTouch.windowId = eventMouse.windowId;
 
         if (eventType === InputEventType.TOUCH_END) {

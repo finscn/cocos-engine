@@ -53,7 +53,7 @@ const _tempVec2_1 = new Vec2();
 
 const quintEaseOut = (time: number): number => {
     time -= 1;
-    return (time * time * time * time * time + 1);
+    return time * time * time * time * time + 1;
 };
 
 const getTimeInMilliseconds = (): number => {
@@ -75,6 +75,12 @@ const eventMap = {
     'touch-up'                   : 10,
     'scroll-ended-with-threshold': 11,
     'scroll-began'               : 12,
+};
+
+const eventMap2 = {
+    aaaa: 4,
+    bbbb: 5,
+    cccc: 5,
 };
 
 /**
@@ -1230,7 +1236,7 @@ export class ScrollView extends ViewGroup {
 
     protected _calculateAttenuatedFactor (distance: number): number {
         if (this.brake <= 0) {
-            return (1 - this.brake);
+            return 1 - this.brake;
         }
 
         // attenuate formula from: http://learnopengl.com/#!Lighting/Light-casters
@@ -1244,8 +1250,8 @@ export class ScrollView extends ViewGroup {
             const contentSize = this._content._uiProps.uiTransformComp!.contentSize;
             const scrollViewSize = this.view.contentSize;
 
-            const totalMoveWidth = (contentSize.width - scrollViewSize.width);
-            const totalMoveHeight = (contentSize.height - scrollViewSize.height);
+            const totalMoveWidth = contentSize.width - scrollViewSize.width;
+            const totalMoveHeight = contentSize.height - scrollViewSize.height;
 
             const attenuatedFactorX = this._calculateAttenuatedFactor(totalMoveWidth);
             const attenuatedFactorY = this._calculateAttenuatedFactor(totalMoveHeight);
@@ -1451,7 +1457,7 @@ export class ScrollView extends ViewGroup {
             || event === EventType.SCROLL_TO_BOTTOM
             || event === EventType.SCROLL_TO_LEFT
             || event === EventType.SCROLL_TO_RIGHT) {
-            const flag = (1 << eventMap[event]);
+            const flag = 1 << eventMap[event];
             if (this._scrollEventEmitMask & flag) {
                 return;
             } else {
@@ -1566,8 +1572,8 @@ export class ScrollView extends ViewGroup {
         let outOfBoundary: Vec3;
         if (this.elastic) {
             outOfBoundary = this._getHowMuchOutOfBoundary();
-            realMove.x *= (outOfBoundary.x === 0 ? 1 : 0.5);
-            realMove.y *= (outOfBoundary.y === 0 ? 1 : 0.5);
+            realMove.x *= outOfBoundary.x === 0 ? 1 : 0.5;
+            realMove.y *= outOfBoundary.y === 0 ? 1 : 0.5;
         }
 
         if (!this.elastic) {
