@@ -125,7 +125,9 @@ export class AccelerometerInputSource {
                 if (response === 'granted') {
                     this._registerEvent();
                 }
-            }).catch((e: any) => {});
+            }).catch((e: any) => {
+                //
+            });
         } else {
             this._registerEvent();
         }
