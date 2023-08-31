@@ -23,18 +23,18 @@
 */
 
 import { JSB } from 'internal:constants';
-import { Mat4, Size, Vec3 } from '../../core/math';
+import { TiledLayer, TiledRenderData, TiledTile } from '..';
 import { IAssembler } from '../../2d/renderer/base';
 import { IBatcher } from '../../2d/renderer/i-batcher';
-import { TiledLayer, TiledRenderData, TiledTile } from '..';
-import { GID, MixedGID, RenderOrder, TiledGrid, TileFlag } from '../tiled-types';
-import { director, Director } from '../../game';
-import { StaticVBAccessor } from '../../2d/renderer/static-vb-accessor';
-import { vfmtPosUvColor } from '../../2d/renderer/vertex-format';
 import { RenderData } from '../../2d/renderer/render-data';
 import { RenderDrawInfoType } from '../../2d/renderer/render-draw-info';
+import { StaticVBAccessor } from '../../2d/renderer/static-vb-accessor';
+import { vfmtPosUvColor } from '../../2d/renderer/vertex-format';
 import { Texture2D } from '../../asset/assets';
+import { Mat4, Size, Vec3 } from '../../core/math';
+import { Director, director } from '../../game';
 import { Node } from '../../scene-graph';
+import { GID, MixedGID, RenderOrder, TileFlag, TiledGrid } from '../tiled-types';
 
 const MaxGridsLimit = Math.ceil(65535 / 6);
 
@@ -56,8 +56,8 @@ let _moveX = 0;
 let _moveY = 0;
 
 let _fillCount = 0;
-let _curTexture : Texture2D | null = null;
-let _tempBuffers : Float32Array;
+let _curTexture: Texture2D | null = null;
+let _tempBuffers: Float32Array;
 let _curLayer: TiledLayer;
 
 let flipTexture: (grid: TiledGrid, gid: MixedGID) => void;
@@ -87,7 +87,9 @@ export const simple: IAssembler = {
     },
 
     fillBuffers (layer: TiledLayer, renderer: IBatcher) {
-        if (!layer || layer.tiledDataArray.length === 0) return;
+        if (!layer || layer.tiledDataArray.length === 0) {
+            return;
+        }
 
         const dataArray = layer.tiledDataArray;
 
@@ -168,7 +170,9 @@ export const simple: IAssembler = {
         colorV[3] = color.a / 255;
         const rs = tiled.tiledDataArray;
         for (const r of rs) {
-            if (!(r as any).renderData) continue;
+            if (!(r as any).renderData) {
+                continue;
+            }
             const renderData = (r as any).renderData;
             const vs = renderData.vData;
             for (let i = renderData.vertexStart, l = renderData.vertexCount; i < l; i++) {
@@ -302,7 +306,9 @@ function _flipDiamondTileTexture (inGrid: TiledGrid, gid: MixedGID): void {
 }
 
 function packRenderData (): void {
-    if (_fillCount < 1 || !_curTexture) return;
+    if (_fillCount < 1 || !_curTexture) {
+        return;
+    }
 
     const vbCount = 4 * _fillCount;
     const ibCount = 6 * _fillCount;
@@ -328,7 +334,9 @@ function packRenderData (): void {
 function traverseGrids (leftDown: { col: number, row: number }, rightTop: { col: number, row: number },
     rowMoveDir: number, colMoveDir: number, comp: TiledLayer): void {
     // show nothing
-    if (rightTop.row < 0 || rightTop.col < 0) return;
+    if (rightTop.row < 0 || rightTop.col < 0) {
+        return;
+    }
 
     _curLayer = comp;
 
@@ -420,7 +428,9 @@ function traverseGrids (leftDown: { col: number, row: number }, rightTop: { col:
 
             gid = tiles[colData.index];
             grid = texGrids.get((((gid as unknown as number) & TileFlag.FLIPPED_MASK) >>> 0) as unknown as GID);
-            if (!grid) continue;
+            if (!grid) {
+                continue;
+            }
 
             // check init or new material
             if (_curTexture !== grid.texture) {

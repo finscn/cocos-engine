@@ -22,19 +22,23 @@
  THE SOFTWARE.
 */
 
-import { Label, HorizontalTextAlignment, VerticalTextAlignment } from '../2d/components/label';
 import codec from '../../external/compression/ZipUtils.js';
 import zlib from '../../external/compression/zlib.min.js';
-import { SAXParser } from '../asset/asset-manager/plist-parser';
-import {
-    GID, MixedGID, Orientation, PropertiesInfo, RenderOrder, StaggerAxis, StaggerIndex, TiledAnimation, TiledAnimationType,
-    TileFlag, TMXImageLayerInfo, TMXLayerInfo, TMXObject, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
-} from './tiled-types';
-import { Color, errorID, logID, Size, Vec2 } from '../core';
 import { SpriteFrame } from '../2d/assets';
+import { HorizontalTextAlignment, Label, VerticalTextAlignment } from '../2d/components/label';
+import { SAXParser } from '../asset/asset-manager/plist-parser';
+import { Color, Size, Vec2, errorID, logID } from '../core';
+import {
+    GID, MixedGID, Orientation, PropertiesInfo, RenderOrder, StaggerAxis, StaggerIndex,
+    TMXImageLayerInfo, TMXLayerInfo, TMXObject, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
+    TileFlag,
+    TiledAnimation, TiledAnimationType
+} from './tiled-types';
 
 function uint8ArrayToUint32Array (uint8Arr: Uint8Array): null | Uint32Array | number[] {
-    if (uint8Arr.length % 4 !== 0) return null;
+    if (uint8Arr.length % 4 !== 0) {
+        return null;
+    }
     const arrLen = uint8Arr.length / 4;
     const retArr = window.Uint32Array ? new Uint32Array(arrLen) : [];
     for (let i = 0; i < arrLen; i++) {
@@ -72,7 +76,7 @@ function strToColor (value: string): Color {
     if (!value) {
         return new Color(0, 0, 0, 255);
     }
-    value = (value.indexOf('#') !== -1) ? value.substring(1) : value;
+    value = value.indexOf('#') !== -1 ? value.substring(1) : value;
     if (value.length === 8) {
         const a = parseInt(value.substr(0, 2), 16) || 255;
         const r = parseInt(value.substr(2, 2), 16) || 0;
@@ -183,9 +187,13 @@ export class TMXMapInfo {
     protected _objectGroups: TMXObjectGroupInfo[] = [];
     protected _allChildren: (TMXLayerInfo | TMXImageLayerInfo | TMXObjectGroupInfo)[] = [];
     protected _mapSize = new Size(0, 0);
-    get mapSize (): Size { return this._mapSize; }
+    get mapSize (): Size {
+        return this._mapSize;
+    }
     protected _tileSize = new Size(0, 0);
-    get tileSize (): Size { return this._tileSize; }
+    get tileSize (): Size {
+        return this._tileSize;
+    }
     protected _layers: TMXLayerInfo[] = [];
     protected _tilesets: TMXTilesetInfo[] = [];
     protected _imageLayers: TMXImageLayerInfo[] = [];
@@ -555,10 +563,15 @@ export class TMXMapInfo {
                 }
             }
 
-            if (orientationStr === 'orthogonal') this.orientation = Orientation.ORTHO;
-            else if (orientationStr === 'isometric') this.orientation = Orientation.ISO;
-            else if (orientationStr === 'hexagonal') this.orientation = Orientation.HEX;
-            else if (orientationStr !== null) logID(7217, orientationStr);
+            if (orientationStr === 'orthogonal') {
+                this.orientation = Orientation.ORTHO;
+            } else if (orientationStr === 'isometric') {
+                this.orientation = Orientation.ISO;
+            } else if (orientationStr === 'hexagonal') {
+                this.orientation = Orientation.HEX;
+            } else if (orientationStr !== null) {
+                logID(7217, orientationStr);
+            }
 
             if (renderorderStr === 'right-up') {
                 this.renderOrder = RenderOrder.RightUp;
@@ -649,7 +662,9 @@ export class TMXMapInfo {
                 let tileset: TMXTilesetInfo | null = null;
                 for (let tileIdx = 0; tileIdx < tileCount; tileIdx++) {
                     const curImage = images[tileIdx] ? images[tileIdx] : firstImage;
-                    if (!curImage) continue;
+                    if (!curImage) {
+                        continue;
+                    }
                     let curImageName: string = curImage.getAttribute('source')!;
                     curImageName = curImageName.replace(/\\/g, '/');
 
@@ -794,7 +809,9 @@ export class TMXMapInfo {
 
     protected _parseImageLayer (selLayer: Element): TMXImageLayerInfo | null {
         const datas = selLayer.getElementsByTagName('image');
-        if (!datas || datas.length === 0) return null;
+        if (!datas || datas.length === 0) {
+            return null;
+        }
 
         const imageLayer = new TMXImageLayerInfo();
         imageLayer.name = selLayer.getAttribute('name')!;
@@ -839,8 +856,11 @@ export class TMXMapInfo {
         layer.visible = !(visible === '0');
 
         const opacity = selLayer.getAttribute('opacity');
-        if (opacity) layer.opacity = Math.round(255 * parseFloat(opacity));
-        else layer.opacity = 255;
+        if (opacity) {
+            layer.opacity = Math.round(255 * parseFloat(opacity));
+        } else {
+            layer.opacity = 255;
+        }
         layer.offset = new Vec2(parseFloat(selLayer.getAttribute('offsetx')!) || 0, parseFloat(selLayer.getAttribute('offsety')!) || 0);
 
         const tintColor = selLayer.getAttribute('tintcolor');
@@ -872,20 +892,27 @@ export class TMXMapInfo {
         case null:
         case '':
             // Uncompressed
-            if (encoding === 'base64') tiles = codec.Base64.decodeAsArray(nodeValue, 4);
-            else if (encoding === 'csv') {
+            if (encoding === 'base64') {
+                tiles = codec.Base64.decodeAsArray(nodeValue, 4);
+            } else if (encoding === 'csv') {
                 tiles = [];
                 const csvTiles = nodeValue.split(',');
-                for (let csvIdx = 0; csvIdx < csvTiles.length; csvIdx++) tiles.push(parseInt(csvTiles[csvIdx]));
+                for (let csvIdx = 0; csvIdx < csvTiles.length; csvIdx++) {
+                    tiles.push(parseInt(csvTiles[csvIdx]));
+                }
             } else {
                 // XML format
                 const selDataTiles = data.getElementsByTagName('tile');
                 tiles = [];
-                for (let xmlIdx = 0; xmlIdx < selDataTiles.length; xmlIdx++) tiles.push(parseInt(selDataTiles[xmlIdx].getAttribute('gid')!));
+                for (let xmlIdx = 0; xmlIdx < selDataTiles.length; xmlIdx++) {
+                    tiles.push(parseInt(selDataTiles[xmlIdx].getAttribute('gid')!));
+                }
             }
             break;
         default:
-            if (this.layerAttrs === TMXLayerInfo.ATTRIB_NONE) logID(7219);
+            if (this.layerAttrs === TMXLayerInfo.ATTRIB_NONE) {
+                logID(7219);
+            }
             break;
         }
         if (tiles) {
@@ -904,20 +931,29 @@ export class TMXMapInfo {
         objectGroup.offset = new Vec2(parseFloat(selGroup.getAttribute('offsetx')!), parseFloat(selGroup.getAttribute('offsety')!));
 
         const opacity = selGroup.getAttribute('opacity');
-        if (opacity) objectGroup.opacity = Math.round(255 * parseFloat(opacity));
-        else objectGroup.opacity = 255;
+        if (opacity) {
+            objectGroup.opacity = Math.round(255 * parseFloat(opacity));
+        } else {
+            objectGroup.opacity = 255;
+        }
 
         const tintColor = selGroup.getAttribute('tintcolor');
         objectGroup.tintColor = tintColor ? strToColor(tintColor) : null;
 
         const visible = selGroup.getAttribute('visible');
-        if (visible && parseInt(visible) === 0) objectGroup.visible = false;
+        if (visible && parseInt(visible) === 0) {
+            objectGroup.visible = false;
+        }
 
         const color = selGroup.getAttribute('color');
-        if (color) objectGroup.color.fromHEX(color);
+        if (color) {
+            objectGroup.color.fromHEX(color);
+        }
 
         const draworder = selGroup.getAttribute('draworder');
-        if (draworder) objectGroup.draworder = draworder as any;
+        if (draworder) {
+            objectGroup.draworder = draworder as any;
+        }
 
         // set the properties to the group
         objectGroup.setProperties(getPropertyList(selGroup));
@@ -982,7 +1018,9 @@ export class TMXMapInfo {
                 if (polygonProps && polygonProps.length > 0) {
                     objectProp.type = TMXObjectType.POLYGON;
                     const selPgPointStr = polygonProps[0].getAttribute('points');
-                    if (selPgPointStr) objectProp.points = this._parsePointsString(selPgPointStr)!;
+                    if (selPgPointStr) {
+                        objectProp.points = this._parsePointsString(selPgPointStr)!;
+                    }
                 }
 
                 // polyline
@@ -990,7 +1028,9 @@ export class TMXMapInfo {
                 if (polylineProps && polylineProps.length > 0) {
                     objectProp.type = TMXObjectType.POLYLINE;
                     const selPlPointStr = polylineProps[0].getAttribute('points');
-                    if (selPlPointStr) objectProp.polylinePoints = this._parsePointsString(selPlPointStr)!;
+                    if (selPlPointStr) {
+                        objectProp.polylinePoints = this._parsePointsString(selPlPointStr)!;
+                    }
                 }
 
                 if (!objectProp.type) {
@@ -1012,7 +1052,9 @@ export class TMXMapInfo {
         x: number;
         y: number;
     }[] | null {
-        if (!pointsString) return null;
+        if (!pointsString) {
+            return null;
+        }
 
         const points: { x: number, y: number }[] = [];
         const pointsStr = pointsString.split(' ');

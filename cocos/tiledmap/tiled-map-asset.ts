@@ -23,11 +23,11 @@
  THE SOFTWARE.
 */
 
-import { ccclass, type, serializable } from 'cc.decorator';
-import { Asset } from '../asset/assets/asset';
-import { CCString, Size } from '../core';
+import { ccclass, serializable, type } from 'cc.decorator';
 import { SpriteFrame } from '../2d/assets';
 import { TextAsset } from '../asset/assets';
+import { Asset } from '../asset/assets/asset';
+import { CCString, Size } from '../core';
 
 /**
  * @en
@@ -70,7 +70,7 @@ export class TiledMapAsset extends Asset {
      */
     @serializable
     @type([SpriteFrame])
-    imageLayerSpriteFrame: SpriteFrame[] = []
+    imageLayerSpriteFrame: SpriteFrame[] = [];
 
     /**
      * @en

@@ -34,11 +34,11 @@
  */
 
 import { ccclass, executeInEditMode, help, menu, requireComponent, type } from 'cc.decorator';
-import { Component } from '../scene-graph/component';
-import { TiledLayer } from './tiled-layer';
-import { CCInteger, warn } from '../core';
 import { UITransform } from '../2d/framework';
+import { CCInteger, warn } from '../core';
+import { Component } from '../scene-graph/component';
 import { NodeEventType } from '../scene-graph/node-event';
+import { TiledLayer } from './tiled-layer';
 
 @ccclass('cc.TiledTile')
 @help('i18n:cc.TiledTile')
@@ -69,7 +69,9 @@ export class TiledTile extends Component {
         return this._x;
     }
     set x (value) {
-        if (value === this._x) return;
+        if (value === this._x) {
+            return;
+        }
         if (this._layer && this._layer.isInvalidPosition(value, this._y)) {
             warn(`Invalid x, the valid value is between [%s] ~ [%s]`, 0, this._layer.layerSize.width);
             return;
@@ -90,7 +92,9 @@ export class TiledTile extends Component {
         return this._y;
     }
     set y (value: number) {
-        if (value === this._y) return;
+        if (value === this._y) {
+            return;
+        }
         if (this._layer && this._layer.isInvalidPosition(this._x, value)) {
             warn(`Invalid y, the valid value is between [%s] ~ [%s]`, 0, this._layer.layerSize.height);
             return;
@@ -140,7 +144,9 @@ export class TiledTile extends Component {
     }
 
     public updateInfo (): void {
-        if (!this._layer) return;
+        if (!this._layer) {
+            return;
+        }
 
         const x = this._x;
         const y = this._y;

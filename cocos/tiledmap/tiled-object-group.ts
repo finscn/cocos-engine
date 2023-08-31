@@ -23,18 +23,18 @@
  THE SOFTWARE.
 */
 
-import { ccclass, help, type, requireComponent } from 'cc.decorator';
-import { Component } from '../scene-graph/component';
-import { Sprite } from '../2d/components/sprite';
+import { ccclass, help, requireComponent, type } from 'cc.decorator';
 import { Label } from '../2d/components/label';
+import { Sprite } from '../2d/components/sprite';
 import { BlendFactor } from '../gfx';
+import { Component } from '../scene-graph/component';
 
-import { TMXMapInfo } from './tmx-xml-parser';
-import { TiledTextureGrids, GID, TileFlag, Orientation, StaggerAxis, TMXObjectType, PropertiesInfo, TiledAnimationType, TMXObject, TMXObjectGroupInfo } from './tiled-types';
-import { UITransform } from '../2d/framework/ui-transform';
-import { CCBoolean, Vec2, Color, CCObject } from '../core';
 import { SpriteFrame } from '../2d/assets';
+import { UITransform } from '../2d/framework/ui-transform';
+import { CCBoolean, CCObject, Color, Vec2 } from '../core';
 import { Node } from '../scene-graph/node';
+import { GID, Orientation, PropertiesInfo, StaggerAxis, TMXObject, TMXObjectGroupInfo, TMXObjectType, TileFlag, TiledAnimationType, TiledTextureGrids } from './tiled-types';
+import { TMXMapInfo } from './tmx-xml-parser';
 
 /**
  * @en Renders the TMX object group.
@@ -140,7 +140,9 @@ export class TiledObjectGroup extends Component {
     protected _mapInfo?: TMXMapInfo;
     protected _properties?: PropertiesInfo;
     protected _offset?: Vec2;
-    get offset (): Vec2 { return this._offset!; }
+    get offset (): Vec2 {
+        return this._offset!;
+    }
     protected _opacity?: number;
     protected _tintColor: Color | null = null;
 
@@ -279,7 +281,9 @@ export class TiledObjectGroup extends Component {
                 const gid = object.gid;
                 const gridGID: GID = (((gid as unknown as number) & FLIPPED_MASK) >>> 0) as any;
                 const grid = texGrids.get(gridGID);
-                if (!grid) continue;
+                if (!grid) {
+                    continue;
+                }
                 const tileset = grid.tileset;
                 const imgName = `img${object.id}`;
                 aliveNodes[imgName] = true;
@@ -383,7 +387,9 @@ export class TiledObjectGroup extends Component {
             const c = children[i];
             const cName = c.name;
             const isUseless = uselessExp.test(cName);
-            if (isUseless && !aliveNodes[cName]) c.destroy();
+            if (isUseless && !aliveNodes[cName]) {
+                c.destroy();
+            }
         }
     }
 

@@ -22,22 +22,26 @@
  THE SOFTWARE.
 */
 
-import { ccclass, displayOrder, executeInEditMode, help, menu, requireComponent, type, serializable, editable } from 'cc.decorator';
+import { ccclass, displayOrder, editable, executeInEditMode, help, menu, requireComponent, serializable, type } from 'cc.decorator';
 import { EDITOR, JSB } from 'internal:constants';
-import { Component } from '../scene-graph/component';
-import { UITransform } from '../2d/framework';
-import { GID, Orientation, PropertiesInfo, Property, RenderOrder, StaggerAxis, StaggerIndex, TiledAnimationType, TiledTextureGrids, TileFlag,
-    TMXImageLayerInfo, TMXLayerInfo, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo } from './tiled-types';
-import { TMXMapInfo } from './tmx-xml-parser';
-import { TiledLayer } from './tiled-layer';
-import { TiledObjectGroup } from './tiled-object-group';
-import { TiledMapAsset } from './tiled-map-asset';
-import { Sprite } from '../2d/components/sprite';
-import { fillTextureGrids } from './tiled-utils';
-import { Size, Vec2, logID, Color, sys } from '../core';
 import { SpriteFrame } from '../2d/assets';
-import { NodeEventType } from '../scene-graph/node-event';
+import { Sprite } from '../2d/components/sprite';
+import { UITransform } from '../2d/framework';
+import { Color, Size, Vec2, logID, sys } from '../core';
 import { Node } from '../scene-graph';
+import { Component } from '../scene-graph/component';
+import { NodeEventType } from '../scene-graph/node-event';
+import { TiledLayer } from './tiled-layer';
+import { TiledMapAsset } from './tiled-map-asset';
+import { TiledObjectGroup } from './tiled-object-group';
+import {
+    GID, Orientation, PropertiesInfo, Property, RenderOrder, StaggerAxis, StaggerIndex,
+    TMXImageLayerInfo, TMXLayerInfo, TMXObjectGroupInfo, TMXObjectType, TMXTilesetInfo,
+    TileFlag,
+    TiledAnimationType, TiledTextureGrids
+} from './tiled-types';
+import { fillTextureGrids } from './tiled-utils';
+import { TMXMapInfo } from './tmx-xml-parser';
 
 interface ImageExtendedNode extends Node {
     layerInfo: TMXImageLayerInfo;
@@ -436,7 +440,9 @@ export class TiledMap extends Component {
     _fillAniGrids (texGrids: TiledTextureGrids, animations: TiledAnimationType): void {
         for (const i of animations.keys()) {
             const animation = animations.get(i);
-            if (!animation) continue;
+            if (!animation) {
+                continue;
+            }
             const frames = animation.frames;
             for (let j = 0; j < frames.length; j++) {
                 const frame = frames[j];
@@ -453,7 +459,9 @@ export class TiledMap extends Component {
 
         for (let i = 0, l = tilesets.length; i < l; ++i) {
             const tilesetInfo = tilesets[i];
-            if (!tilesetInfo) continue;
+            if (!tilesetInfo) {
+                continue;
+            }
             if (!tilesetInfo.sourceImage) {
                 console.warn(`Can't find the spriteFrame of tilesets ${i}`);
                 continue;
@@ -584,14 +592,18 @@ export class TiledMap extends Component {
         const totalTextures: SpriteFrame[] = [];
         for (let i = 0, l = tilesets.length; i < l; ++i) {
             const tilesetInfo = tilesets[i];
-            if (!tilesetInfo || !tilesetInfo.sourceImage) continue;
+            if (!tilesetInfo || !tilesetInfo.sourceImage) {
+                continue;
+            }
             this._textures[i] = tilesetInfo.sourceImage;
             totalTextures.push(tilesetInfo.sourceImage);
         }
 
         for (let i = 0; i < this._imageLayers.length; i++) {
             const imageLayer = this._imageLayers[i];
-            if (!imageLayer || !imageLayer.sourceImage) continue;
+            if (!imageLayer || !imageLayer.sourceImage) {
+                continue;
+            }
             totalTextures.push(imageLayer.sourceImage);
         }
 
@@ -606,9 +618,13 @@ export class TiledMap extends Component {
     doCleanupImageCache (texture): void {
         if (texture._image instanceof HTMLImageElement) {
             texture._image.src = '';
-            if (JSB) texture._image.destroy();
+            if (JSB) {
+                texture._image.destroy();
+            }
         } else if (sys.hasFeature(sys.Feature.IMAGE_BITMAP) && texture._image instanceof ImageBitmap) {
-            if (texture._image.close) texture._image.close();
+            if (texture._image.close) {
+                texture._image.close();
+            }
         }
         texture._image = null;
     }
