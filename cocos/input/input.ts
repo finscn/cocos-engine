@@ -261,10 +261,9 @@ export class Input {
      * Get all the current touches objects as array.
      * @zh
      * 获取当前 所有touch对象 的数组。
-     * @param clone - Whether to clone touch object
      */
-    public getAllTouches (clone?: boolean): Touch[] {
-        return touchManager.getAllTouches(clone);
+    public getAllTouches (): Touch[] {
+        return touchManager.getAllTouches();
     }
 
     /**
@@ -312,7 +311,7 @@ export class Input {
     private _simulateEventTouch (eventMouse: EventMouse): void {
         const eventType = pointerEventTypeMap[eventMouse.type];
         const touchID = 0;
-        const touch = touchManager.getTouch(touchID, eventMouse.getLocationX(), eventMouse.getLocationY());
+        const touch = touchManager.getOrCreateTouch(touchID, eventMouse.getLocationX(), eventMouse.getLocationY());
         if (!touch) {
             return;
         }

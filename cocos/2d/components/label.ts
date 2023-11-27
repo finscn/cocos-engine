@@ -23,12 +23,12 @@
  THE SOFTWARE.
 */
 
-import { ccclass, help, executionOrder, menu, tooltip, displayOrder, visible, multiline, type, serializable, editable } from 'cc.decorator';
+import { ccclass, help, executionOrder, menu, displayOrder, visible, multiline, type, serializable, editable } from 'cc.decorator';
 import { BYTEDANCE, EDITOR, JSB } from 'internal:constants';
 import { minigame } from 'pal/minigame';
 import { BitmapFont, Font, SpriteFrame } from '../assets';
 import { ImageAsset, Texture2D } from '../../asset/assets';
-import { ccenum, cclegacy, Color } from '../../core';
+import { ccenum, cclegacy, Color, Vec2 } from '../../core';
 import { IBatcher } from '../renderer/i-batcher';
 import { FontAtlas } from '../assets/bitmap-font';
 import { CanvasPool, ISharedLabelData, LetterRenderTexture } from '../assembler/label/font-utils';
@@ -212,7 +212,6 @@ export class Label extends UIRenderer {
      * 标签显示的文本内容。
      */
     @displayOrder(4)
-    @tooltip('i18n:label.string')
     @multiline
     get string (): string {
         return this._string;
@@ -241,7 +240,6 @@ export class Label extends UIRenderer {
      */
     @type(HorizontalTextAlignment)
     @displayOrder(5)
-    @tooltip('i18n:label.horizontal_align')
     get horizontalAlign (): HorizontalTextAlignment {
         return this._horizontalAlign;
     }
@@ -263,7 +261,6 @@ export class Label extends UIRenderer {
      */
     @type(VerticalTextAlignment)
     @displayOrder(6)
-    @tooltip('i18n:label.vertical_align')
     get verticalAlign (): VerticalTextAlignment {
         return this._verticalAlign;
     }
@@ -298,7 +295,6 @@ export class Label extends UIRenderer {
      * 文本字体大小。
      */
     @displayOrder(7)
-    @tooltip('i18n:label.font_size')
     get fontSize (): number {
         return this._fontSize;
     }
@@ -319,7 +315,6 @@ export class Label extends UIRenderer {
      * 文本行高。
      */
     @displayOrder(8)
-    @tooltip('i18n:label.line_height')
     get lineHeight (): number {
         return this._lineHeight;
     }
@@ -343,7 +338,6 @@ export class Label extends UIRenderer {
         return !this._isSystemFontUsed && this._font instanceof BitmapFont;
     })
     @displayOrder(9)
-    @tooltip('i18n:label.spacing_x')
     get spacingX (): number {
         return this._spacingX;
     }
@@ -365,7 +359,6 @@ export class Label extends UIRenderer {
      */
     @type(Overflow)
     @displayOrder(10)
-    @tooltip('i18n:label.overflow')
     get overflow (): Overflow {
         return this._overflow;
     }
@@ -386,7 +379,6 @@ export class Label extends UIRenderer {
      * 是否自动换行。
      */
     @displayOrder(11)
-    @tooltip('i18n:label.wrap')
     get enableWrapText (): boolean {
         return this._enableWrapText;
     }
@@ -407,7 +399,6 @@ export class Label extends UIRenderer {
      * 是否使用系统字体。
      */
     @displayOrder(12)
-    @tooltip('i18n:label.system_font')
     get useSystemFont (): boolean {
         return this._isSystemFontUsed;
     }
@@ -443,7 +434,6 @@ export class Label extends UIRenderer {
      */
     @displayOrder(13)
     @visible(function (this: Label) { return this._isSystemFontUsed; })
-    @tooltip('i18n:label.font_family')
     get fontFamily (): string {
         return this._fontFamily;
     }
@@ -466,7 +456,6 @@ export class Label extends UIRenderer {
     @type(Font)
     @displayOrder(13)
     @visible(function (this: Label) { return !this._isSystemFontUsed; })
-    @tooltip('i18n:label.font')
     get font (): Font | null {
         // return this._N$file;
         return this._font;
@@ -503,7 +492,6 @@ export class Label extends UIRenderer {
      */
     @type(CacheMode)
     @displayOrder(14)
-    @tooltip('i18n:label.cache_mode')
     get cacheMode (): CacheMode {
         return this._cacheMode;
     }
@@ -531,7 +519,6 @@ export class Label extends UIRenderer {
      * 字体是否加粗。
      */
     @displayOrder(15)
-    @tooltip('i18n:label.font_bold')
     get isBold (): boolean {
         return this._isBold;
     }
@@ -552,7 +539,6 @@ export class Label extends UIRenderer {
      * 字体是否倾斜。
      */
     @displayOrder(16)
-    @tooltip('i18n:label.font_italic')
     get isItalic (): boolean {
         return this._isItalic;
     }
@@ -573,7 +559,6 @@ export class Label extends UIRenderer {
      * 字体是否加下划线。
      */
     @displayOrder(17)
-    @tooltip('i18n:label.font_underline')
     get isUnderline (): boolean {
         return this._isUnderline;
     }
@@ -593,13 +578,142 @@ export class Label extends UIRenderer {
     @visible(function (this: Label) { return this._isUnderline; })
     @editable
     @displayOrder(18)
-    @tooltip('i18n:label.underline_height')
-    public get underlineHeight (): number {
+    get underlineHeight (): number {
         return this._underlineHeight;
     }
-    public set underlineHeight (value) {
+    set underlineHeight (value) {
         if (this._underlineHeight === value) return;
         this._underlineHeight = value;
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     ** @en
+     ** Outline effect used to change the display, only for system fonts or TTF fonts.
+     **
+     ** @zh
+     ** 描边效果组件,用于字体描边,只能用于系统字体或 ttf 字体。
+     **/
+    @editable
+    @visible(function (this: Label) { return !(this._font instanceof BitmapFont); })
+    @displayOrder(19)
+    get enableOutline (): boolean {
+        return this._enableOutline;
+    }
+    set enableOutline (value) {
+        if (this._enableOutline === value) return;
+        this._enableOutline = value;
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en
+     * Outline color.
+     *
+     * @zh
+     * 改变描边的颜色。
+     */
+    @editable
+    @visible(function (this: Label) { return this._enableOutline && !(this._font instanceof BitmapFont); })
+    @displayOrder(20)
+    get outlineColor (): Color {
+        return this._outlineColor;
+    }
+    set outlineColor (value) {
+        if (this._outlineColor === value) return;
+        this._outlineColor.set(value);
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en
+     * Change the outline width.
+     *
+     * @zh
+     * 改变描边的宽度。
+     */
+    @editable
+    @visible(function (this: Label) { return this._enableOutline && !(this._font instanceof BitmapFont); })
+    @displayOrder(21)
+    get outlineWidth (): number {
+        return this._outlineWidth;
+    }
+    set outlineWidth (value) {
+        if (this._outlineWidth === value) return;
+        this._outlineWidth = value;
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en Shadow effect for Label component, only for system fonts or TTF fonts. Disabled when cache mode is char.
+     * @zh 用于给 Label 组件添加阴影效果，只能用于系统字体或 ttf 字体。在缓存模式为 char 时不可用。
+     */
+    @editable
+    @visible(function (this: Label) { return !(this._font instanceof BitmapFont) && (this.cacheMode !== CacheMode.CHAR); })
+    @displayOrder(22)
+    get enableShadow (): boolean {
+        return this._enableShadow;
+    }
+    set enableShadow (value) {
+        if (this._enableShadow === value) return;
+        this._enableShadow = value;
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en
+     * Shadow color.
+     *
+     * @zh
+     * 阴影的颜色。
+     */
+    @editable
+    @visible(function (this: Label) { return this._enableShadow && !(this._font instanceof BitmapFont) && (this.cacheMode !== CacheMode.CHAR); })
+    @displayOrder(23)
+    get shadowColor (): Color {
+        return this._shadowColor;
+    }
+    set shadowColor (value) {
+        if (this._shadowColor === value) return;
+        this._shadowColor.set(value);
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en
+     * Offset between font and shadow.
+     *
+     * @zh
+     * 字体与阴影的偏移。
+     */
+    @editable
+    @visible(function (this: Label) { return this._enableShadow && !(this._font instanceof BitmapFont) && (this.cacheMode !== CacheMode.CHAR); })
+    @displayOrder(24)
+    get shadowOffset (): Vec2 {
+        return this._shadowOffset;
+    }
+    set shadowOffset (value) {
+        if (this._shadowOffset === value) return;
+        this._shadowOffset.set(value);
+        this.markForUpdateRenderData();
+    }
+
+    /**
+     * @en
+     * A non-negative float specifying the level of shadow blur.
+     *
+     * @zh
+     * 阴影的模糊程度。
+     */
+    @editable
+    @visible(function (this: Label) { return this._enableShadow && !(this._font instanceof BitmapFont) && (this.cacheMode !== CacheMode.CHAR); })
+    @displayOrder(25)
+    get shadowBlur (): number {
+        return this._shadowBlur;
+    }
+    set shadowBlur (value) {
+        if (this._shadowBlur === value) return;
+        this._shadowBlur = value;
         this.markForUpdateRenderData();
     }
 
@@ -705,6 +819,20 @@ export class Label extends UIRenderer {
     protected _underlineHeight = 2;
     @serializable
     protected _cacheMode = CacheMode.NONE;
+    @serializable
+    protected _enableOutline = false;
+    @serializable
+    protected _outlineColor = new Color(0, 0, 0, 255);
+    @serializable
+    protected _outlineWidth = 2;
+    @serializable
+    protected _enableShadow = false;
+    @serializable
+    protected _shadowColor = new Color(0, 0, 0, 255);
+    @serializable
+    protected _shadowOffset = new Vec2(2, 2);
+    @serializable
+    protected _shadowBlur = 2;
 
     // don't need serialize
     // 这个保存了旧项目的 file 数据

@@ -26,7 +26,7 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 import { EDITOR, TEST } from 'internal:constants';
-import { IBaseConstraint, IPointToPointConstraint, IHingeConstraint, IConeTwistConstraint, IFixedConstraint,
+import { IBaseConstraint, IPointToPointConstraint, IHingeConstraint, IFixedConstraint,
     IConfigurableConstraint } from '../spec/i-physics-constraint';
 import {
     IBoxShape, ISphereShape, ICapsuleShape, ITrimeshShape, ICylinderShape,
@@ -35,7 +35,7 @@ import {
 import { IPhysicsWorld } from '../spec/i-physics-world';
 import { IRigidBody } from '../spec/i-rigid-body';
 import { IBoxCharacterController, ICapsuleCharacterController } from '../spec/i-character-controller';
-import { errorID, IVec3Like, warn, cclegacy } from '../../core';
+import { errorID, IVec3Like, warn, cclegacy, log } from '../../core';
 import { EColliderType, EConstraintType, ECharacterControllerType } from './physics-enum';
 import { PhysicsMaterial } from '.';
 
@@ -58,10 +58,6 @@ interface IPhysicsWrapperObject {
     PlaneShape?: Constructor<IPlaneShape>,
     PointToPointConstraint?: Constructor<IPointToPointConstraint>,
     HingeConstraint?: Constructor<IHingeConstraint>,
-    /**
-     * @deprecated cone twist constraint is deprecated, please use configurable instead
-     */
-    ConeTwistConstraint?: Constructor<IConeTwistConstraint>,
     FixedConstraint?: Constructor<IFixedConstraint>,
     ConfigurableConstraint?: Constructor<IConfigurableConstraint>,
 }
@@ -129,7 +125,7 @@ function updateLegacyMacro (id: string): void {
 }
 
 function register (id: IPhysicsEngineId, wrapper: IPhysicsWrapperObject): void {
-    if (!EDITOR && !TEST) console.info(`[PHYSICS]: register ${id}.`);
+    if (!EDITOR && !TEST) log(`[PHYSICS]: register ${id}.`);
     selector.backend[id] = wrapper;
     if (!selector.physicsWorld || selector.id === id) {
         updateLegacyMacro(id);
@@ -151,13 +147,13 @@ function switchTo (id: IPhysicsEngineId): void {
     const mutableSelector = selector as Mutable<IPhysicsSelector>;
     if (selector.physicsWorld && id !== selector.id && selector.backend[id] != null) {
         selector.physicsWorld.destroy();
-        if (!TEST) console.info(`[PHYSICS]: switch from ${selector.id} to ${id}.`);
+        if (!TEST) log(`[PHYSICS]: switch from ${selector.id} to ${id}.`);
         updateLegacyMacro(id);
         mutableSelector.id = id;
         mutableSelector.wrapper = selector.backend[id];
         mutableSelector.physicsWorld = createPhysicsWorld();
     } else {
-        if (!EDITOR && !TEST) console.info(`[PHYSICS]: using ${id}.`);
+        if (!EDITOR && !TEST) log(`[PHYSICS]: using ${id}.`);
         mutableSelector.physicsWorld = createPhysicsWorld();
     }
     if (worldInitData) {
@@ -189,7 +185,7 @@ export function constructDefaultWorld (data: IWorldInitData): void {
     if (!worldInitData) worldInitData = data;
     if (!selector.runInEditor) return;
     if (!selector.physicsWorld) {
-        if (!TEST) console.info(`[PHYSICS]: using ${selector.id}.`);
+        if (!TEST) log(`[PHYSICS]: using ${selector.id}.`);
         const mutableSelector = selector as Mutable<IPhysicsSelector>;
         const world = mutableSelector.physicsWorld = createPhysicsWorld();
         world.setGravity(worldInitData.gravity);
@@ -202,6 +198,8 @@ export function constructDefaultWorld (data: IWorldInitData): void {
 const FUNC = (...v: any): any => 0 as any;
 const ENTIRE_WORLD: IPhysicsWorld = {
     impl: null,
+    debugDrawFlags: 0,
+    debugDrawConstraintSize: 0,
     setGravity: FUNC,
     setAllowSleep: FUNC,
     setDefaultMaterial: FUNC,
@@ -236,10 +234,6 @@ enum ECheckType {
     // JOINT //
     PointToPointConstraint,
     HingeConstraint,
-    /**
-     * @deprecated cone twist constraint is deprecated, please use configurable instead
-     */
-    ConeTwistConstraint,
     FixedConstraint,
     ConfigurableConstraint,
     // CHARACTER CONTROLLER //
@@ -422,7 +416,7 @@ function initColliderProxy (): void {
 
 const CREATE_CONSTRAINT_PROXY = { INITED: false };
 
-interface IEntireConstraint extends IPointToPointConstraint, IHingeConstraint, IConeTwistConstraint, IFixedConstraint, IConfigurableConstraint { }
+interface IEntireConstraint extends IPointToPointConstraint, IHingeConstraint, IFixedConstraint, IConfigurableConstraint { }
 const ENTIRE_CONSTRAINT: IEntireConstraint = {
     impl: null,
     initialize: FUNC,
@@ -486,11 +480,6 @@ function initConstraintProxy (): void {
     CREATE_CONSTRAINT_PROXY[EConstraintType.HINGE] = function createHingeConstraint (): IHingeConstraint {
         if (check(selector.wrapper.HingeConstraint, ECheckType.HingeConstraint)) { return ENTIRE_CONSTRAINT; }
         return new selector.wrapper.HingeConstraint!();
-    };
-
-    CREATE_CONSTRAINT_PROXY[EConstraintType.CONE_TWIST] = function createConeTwistConstraint (): IConeTwistConstraint {
-        if (check(selector.wrapper.ConeTwistConstraint, ECheckType.ConeTwistConstraint)) { return ENTIRE_CONSTRAINT; }
-        return new selector.wrapper.ConeTwistConstraint!();
     };
 
     CREATE_CONSTRAINT_PROXY[EConstraintType.FIXED] = function createFixedConstraint (): IFixedConstraint {

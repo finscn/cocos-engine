@@ -409,6 +409,7 @@ export enum TextureFlagBit {
     EXTERNAL_NORMAL = 0x8, // External normal texture
     LAZILY_ALLOCATED = 0x10, // Try lazily allocated mode.
     MUTABLE_VIEW_FORMAT = 0x40, // texture view as different format
+    MUTABLE_STORAGE = 0x80, // mutable storage for gl
 }
 
 export enum FormatFeatureBit {
@@ -979,6 +980,15 @@ export class Viewport {
         this.maxDepth = info.maxDepth;
         return this;
     }
+
+    public reset (): void {
+        this.left = 0;
+        this.top = 0;
+        this.width = 0;
+        this.height = 0;
+        this.minDepth = 0;
+        this.maxDepth = 1;
+    }
 }
 
 export class Color {
@@ -1005,6 +1015,13 @@ export class Color {
         this.z = z;
         this.w = w;
         return this;
+    }
+
+    public reset (): void {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+        this.w = 0;
     }
 }
 
@@ -1755,6 +1772,10 @@ export class DescriptorSetLayoutInfo {
     public copy (info: Readonly<DescriptorSetLayoutInfo>): DescriptorSetLayoutInfo {
         deepCopy(this.bindings, info.bindings, DescriptorSetLayoutBinding);
         return this;
+    }
+
+    reset (): void {
+        this.bindings.length = 0;
     }
 }
 

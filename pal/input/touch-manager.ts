@@ -100,14 +100,23 @@ class TouchManager {
      * @param touchID
      * @returns
      */
-    public getTouch (touchID: number, x: number, y: number, clone?: boolean): Touch | undefined {
-        let touch = this._touchMap.get(touchID);
+    public getTouch (touchID: number): Touch | undefined {
+        return this._touchMap.get(touchID);
+    }
+
+    /**
+     * Get or create touch object by touch ID.
+     * @param touchID
+     * @returns
+     */
+    public getOrCreateTouch (touchID: number, x: number, y: number): Touch | undefined {
+        let touch = this.getTouch(touchID);
         if (!touch) {
             touch = this._createTouch(touchID, x, y);
         } else {
             this._updateTouch(touch, x, y);
         }
-        return touch ? clone === false ? touch : this._cloneTouch(touch) : undefined;
+        return touch;
     }
 
     /**
@@ -122,6 +131,13 @@ class TouchManager {
             }
         });
         return touches;
+    }
+
+    /**
+     * Get the number of touches.
+     */
+    public getTouchCount (): number {
+        return touchManager._touchMap.size;
     }
 
     /**

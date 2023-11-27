@@ -126,6 +126,18 @@ enum class StickAxisCode {
     RIGHT_GRIP,
 };
 
+enum class StickTouchCode {
+    UNDEFINE = 0,
+    A,
+    B,
+    X,
+    Y,
+    LEFT_TRIGGER,
+    RIGHT_TRIGGER,
+    LEFT_THUMBSTICK,
+    RIGHT_THUMBSTICK,
+};
+
 struct ControllerInfo {
     struct AxisInfo {
         StickAxisCode axis{StickAxisCode::UNDEFINE};
@@ -137,10 +149,15 @@ struct ControllerInfo {
         bool isPress{false};
         ButtonInfo(StickKeyCode key, bool isPress) : key(key), isPress(isPress) {}
     };
-
+    struct TouchInfo {
+        StickTouchCode key{StickTouchCode::UNDEFINE};
+        float value{0.F};
+        TouchInfo(StickTouchCode key, float value) : key(key), value(value) {}
+    };
     int napdId{0};
     std::vector<AxisInfo> axisInfos;
     std::vector<ButtonInfo> buttonInfos;
+    std::vector<TouchInfo> touchInfos;
 };
 
 struct ControllerEvent {
@@ -322,6 +339,8 @@ DECLARE_BUS_EVENT_ARG1(Keyboard, Engine, const cc::KeyboardEvent &)
 DECLARE_BUS_EVENT_ARG1(Controller, Engine, const cc::ControllerEvent &)
 DECLARE_BUS_EVENT_ARG1(ControllerChange, Engine, const cc::ControllerChangeEvent &)
 DECLARE_BUS_EVENT_ARG1(Tick, Engine, float)
+DECLARE_BUS_EVENT_ARG0(BeforeTick, Engine)
+DECLARE_BUS_EVENT_ARG0(AfterTick, Engine)
 DECLARE_BUS_EVENT_ARG3(Resize, Engine, int, int, uint32_t /* windowId*/)
 DECLARE_BUS_EVENT_ARG1(Orientation, Engine, int)
 DECLARE_BUS_EVENT_ARG1(PointerLock, Engine, bool)

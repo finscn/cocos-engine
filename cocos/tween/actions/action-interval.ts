@@ -50,7 +50,6 @@ import { ActionInstant } from './action-instant';
 export class ActionInterval extends FiniteTimeAction {
     protected MAX_VALUE = 2;
     protected _elapsed = 0;
-
     // eslint-disable-next-line @typescript-eslint/ban-types
     protected _easeList: Function[] = [];
 
@@ -307,7 +306,7 @@ export class Sequence extends ActionInterval {
         const sequence = new Sequence();
         sequence.initWithTwoActions(actionOne, actionTwo);
         return sequence;
-    }
+    };
 
     private _actions: ActionInterval[] = [];
     private _split = 0;
@@ -343,7 +342,7 @@ export class Sequence extends ActionInterval {
             for (let i = 1; i < last; i++) {
                 if (paramArray[i]) {
                     action1 = prev;
-                    prev = Sequence._actionOneTwo(action1, paramArray[i]);
+                    prev = Sequence._actionOneTwo(action1 as ActionInterval, paramArray[i] as ActionInterval);
                 }
             }
             this.initWithTwoActions(prev, paramArray[last]);
@@ -367,7 +366,7 @@ export class Sequence extends ActionInterval {
         durationOne *= actionOne._repeatMethod ? actionOne._timesForRepeat : 1;
         durationTwo *= actionTwo._repeatMethod ? actionTwo._timesForRepeat : 1;
         const d = durationOne + durationTwo;
-        this.initWithDuration(d);
+        this.initWithDuration(d as number);
 
         this._actions[0] = actionOne;
         this._actions[1] = actionTwo;
@@ -376,7 +375,7 @@ export class Sequence extends ActionInterval {
 
     clone (): any {
         const action = new Sequence();
-        this._cloneDecoration(action as any);
+        this._cloneDecoration(action as ActionInterval);
         action.initWithTwoActions(this._actions[0].clone(), this._actions[1].clone());
         return action as any;
     }
@@ -497,7 +496,7 @@ export function sequence (actionArray: Action[]): ActionInterval | null {
         }
     }
 
-    return result;
+    return result as ActionInterval;
 }
 
 /*
@@ -520,7 +519,7 @@ export class Repeat extends ActionInterval {
 
     constructor (action?: any, times?: any) {
         super();
-        times !== undefined && this.initWithAction(action, times);
+        times !== undefined && this.initWithAction(action as FiniteTimeAction, times as number);
     }
 
     /*
@@ -758,7 +757,7 @@ export class Spawn extends ActionInterval {
         const pSpawn = new Spawn();
         pSpawn.initWithTwoActions(action1, action2);
         return pSpawn;
-    }
+    };
 
     private _one: ActionInterval | null = null;
     private _two: ActionInterval | null = null;
@@ -804,14 +803,14 @@ export class Spawn extends ActionInterval {
         const d1 = action1._duration as number;
         const d2 = action2._duration as number;
 
-        if (this.initWithDuration(Math.max(d1, d2))) {
+        if (this.initWithDuration(Math.max(d1 as number, d2 as number))) {
             this._one = action1;
             this._two = action2;
 
             if (d1 > d2) {
-                this._two = Sequence._actionOneTwo(action2, delayTime(d1 - d2));
+                this._two = Sequence._actionOneTwo(action2 as ActionInterval, delayTime(d1 - d2));
             } else if (d1 < d2) {
-                this._one = Sequence._actionOneTwo(action1, delayTime(d2 - d1));
+                this._one = Sequence._actionOneTwo(action1 as ActionInterval, delayTime(d2 - d1));
             }
 
             ret = true;
@@ -884,7 +883,7 @@ export function spawn (/* Multiple Arguments */tempArray: any): FiniteTimeAction
             prev = Spawn._actionOneTwo(prev, paramArray[i]);
         }
     }
-    return prev;
+    return prev as FiniteTimeAction;
 }
 
 /* Delays the action a certain amount of seconds
@@ -944,7 +943,7 @@ export class ReverseTime extends ActionInterval {
 
     constructor (action?: any) {
         super();
-        action && this.initWithAction(action);
+        action && this.initWithAction(action as ActionInterval);
     }
 
     /*
