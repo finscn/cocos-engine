@@ -22,4 +22,5 @@
         "iterator": "cpp"
     },
     "cmake.configureOnOpen": false,
+    "editor.inlineSuggest.showToolbar": "onHover",
 }
