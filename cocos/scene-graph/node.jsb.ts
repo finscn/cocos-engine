@@ -1485,6 +1485,7 @@ nodeProto._instantiate = function (cloned: Node, isSyncedNode: boolean) {
 nodeProto._getUITransformComp = function () {
     return this._uiProps.uiTransformComp;
 };
+nodeProto.getUITransformComp = nodeProto._getUITransformComp;
 
 nodeProto._onSiblingIndexChanged = function (index) {
     const siblings = this._parent._children;
